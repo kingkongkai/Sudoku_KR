@@ -30,12 +30,6 @@ def solve_sudoku(clauses):
 					grid[i - 1][j - 1] = read_cell(i, j)
 
 	return grid, n_solutions
-    """
-    Return the number of the variable of cell i, j and digit d,
-    which is an integer in the range of 1 to 729 (including).
-    """
-    return 81 * (i - 1) + 9 * (j - 1) + d
-
 
 def sudoku_clauses():
     """
@@ -76,16 +70,6 @@ def sudoku_clauses():
     assert len(res) == 81 * (1 + 36) + 27 * 324
     return res
 
-
-def py_itersolve(clauses): # don't use this function!
-    while True:            # (it is only here to explain things)
-        sol = pycosat.solve(clauses)
-        if isinstance(sol, list):
-            yield sol
-            clauses.append([-x for x in sol])
-        else: # no more solutions -- stop iteration
-            return
-
 def is_proper(grid):
     """
     solve a Sudoku grid inplace
@@ -102,6 +86,16 @@ def is_proper(grid):
             if d:
                 clauses.append([v(i, j, d)])
 
+
+	def py_itersolve(clauses): # don't use this function!
+	    while True:            # (it is only here to explain things)
+	        sol = pycosat.solve(clauses)
+	        if isinstance(sol, list):
+	            yield sol
+	            clauses.append([-x for x in sol])
+	        else: # no more solutions -- stop iteration
+	            return
+
     # solve the SAT problem
     generator = py_itersolve(clauses)
     t = 0
@@ -110,33 +104,3 @@ def is_proper(grid):
         if t == 2:
             return False
     return True
-
-#    print len(list(py_itersolve(clauses)))
-#    return len(list(py_itersolve(clauses))) == 1
-    #return len(list(pycosat.py_itersolve(clauses))) == 1
-
-
-if __name__ == '__main__':
-    from pprint import pprint
-
-    # hard Sudoku problem, see Fig. 3 in paper by Weber
-    hard = [[0, 2, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 6, 0, 0, 0, 0, 3],
-            [0, 7, 4, 0, 8, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 3, 0, 0, 2],
-            [0, 8, 0, 0, 4, 0, 0, 1, 0],
-            [6, 0, 0, 5, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 1, 0, 7, 8, 0],
-            [5, 0, 0, 0, 0, 9, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 4, 0]]
-    solve(hard)
-    pprint(hard)
-    assert [[1, 2, 6, 4, 3, 7, 9, 5, 8],
-            [8, 9, 5, 6, 2, 1, 4, 7, 3],
-            [3, 7, 4, 9, 8, 5, 1, 2, 6],
-            [4, 5, 7, 1, 9, 3, 8, 6, 2],
-            [9, 8, 3, 2, 4, 6, 5, 1, 7],
-            [6, 1, 2, 5, 7, 8, 3, 9, 4],
-            [2, 6, 9, 3, 1, 4, 7, 8, 5],
-            [5, 4, 8, 7, 6, 9, 2, 3, 1],
-            [7, 3, 1, 8, 5, 2, 6, 4, 9]] == hard

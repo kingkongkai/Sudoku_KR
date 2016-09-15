@@ -43,7 +43,8 @@ def construct_puzzle_solution():
             # if there is an IndexError, we have worked ourselves in a corner (we just start over)
             pass
 
-def construct_puzzle(puzzle_solution, is_uniform=False, probabilities=None, n_clues=40):
+def generate_sudoku(is_uniform=False, probabilities=None, n_clues=40):
+    puzzle_solution = construct_puzzle_solution()
 
     # Check if distribution should be uniform
     while True:
