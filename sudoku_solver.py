@@ -11,8 +11,8 @@ def v(i, j, d):
 def solve_sudoku(clauses):
 	grid = [[0]*9 for i in range(9)]
 
-	# solve the SAT problem
-	sol = set(pycosat.solve(clauses))
+	solutions = pycosat.itersolve(clauses)
+	n_solutions = 0
 
 	def read_cell(i, j):
 		# return the digit of cell i, j according to the solution
@@ -20,8 +20,13 @@ def solve_sudoku(clauses):
 			if v(i, j, d) in sol:
 				return d
 
-	for i in range(1, 10):
-		for j in range(1, 10):
-			grid[i - 1][j - 1] = read_cell(i, j)
+	for sol in solutions:
+		n_solutions += 1
+		sol = set(sol)
 
-	pprint.pprint(grid)
+		if n_solutions is 1:
+			for i in range(1, 10):
+				for j in range(1, 10):
+					grid[i - 1][j - 1] = read_cell(i, j)
+
+	return grid, n_solutions
