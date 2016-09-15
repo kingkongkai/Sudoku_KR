@@ -1,6 +1,19 @@
-#this code is an edited version of: https://www.ocf.berkeley.edu/~arel/sudoku/main.html
+"""
+SUDOKU (NUMBER PLACE) PUZZLE GENERATOR
+by Arel Cordero November 12, 2005
 
-import random
+This program is released into the public domain.
+Revision 3
+"""
+
+import random, copy, numpy as np
+import sudoku_solver as solver
+from pprint import pprint
+
+"""
+Randomly arrange numbers in a grid while making all rows, columns and
+squares (sub-grids) contain the numbers 1 through 9.
+"""
 
 def construct_puzzle_solution():
     # Loop until we're able to fill all 81 cells with numbers, while
@@ -16,20 +29,21 @@ def construct_puzzle_solution():
                     # pick a number for cell (i,j) from the set of remaining available numbers
                     choices = rows[i].intersection(columns[j]).intersection(squares[(i/3)*3 + j/3])
                     choice  = random.choice(list(choices))
-        
+
                     puzzle[i][j] = choice
-        
+
                     rows[i].discard(choice)
                     columns[j].discard(choice)
                     squares[(i/3)*3 + j/3].discard(choice)
 
             # success! every cell is filled.
             return puzzle
-            
+
         except IndexError:
             # if there is an IndexError, we have worked ourselves in a corner (we just start over)
             pass
 
+<<<<<<< de1f23c7a1381e5998adff1759d9c81eff2a8cf8
 """
 Randomly pluck out cells (numbers) from the solved puzzle grid, ensuring that any
 plucked number can still be deduced from the remaining cells.
@@ -83,3 +97,25 @@ def generate_sudoku(n):
 	result, number_of_cells = pluck(a_puzzle_solution, n)
 
 	return result, number_of_cells
+
+def construct_puzzle(puzzle_solution, is_uniform=False, probabilities=None, n_clues=40):
+
+    # Check if distribution should be uniform
+    while True:
+        if is_uniform:
+            clues = random.sample(xrange(81), n_clues)
+        else:
+            elements = np.arange(81)
+            clues = np.random.choice(elements, n_clues, True, list(probabilities))
+
+
+        # Make sudoku puzzles until we have a proper one
+        # Create the board with the chosen clues
+        puzzle = [[0]*9 for i in range(9)]
+        for clue in clues:
+            puzzle[clue / 9][clue % 9] = puzzle_solution[clue / 9][clue % 9]
+        ret = solver.is_proper(puzzle)
+        print ret
+        # Check if it's proper and return the board if it is
+        if ret:
+            return puzzle
