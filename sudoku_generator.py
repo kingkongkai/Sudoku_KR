@@ -43,61 +43,6 @@ def construct_puzzle_solution():
             # if there is an IndexError, we have worked ourselves in a corner (we just start over)
             pass
 
-<<<<<<< de1f23c7a1381e5998adff1759d9c81eff2a8cf8
-"""
-Randomly pluck out cells (numbers) from the solved puzzle grid, ensuring that any
-plucked number can still be deduced from the remaining cells.
-
-For deduction to be possible, each other cell in the plucked number's row, column,
-or square must not be able to contain that number. """
-def pluck(puzzle, n=0):
-
-    """
-    Answers the question: can the cell (i,j) in the puzzle "puz" contain the number
-    in cell "c"? """
-
-
-    def canBeA(puz, i, j, c):
-        v = puz[c/9][c%9]
-        if puz[i][j] == v: return True
-        if puz[i][j] in range(1,10): return False
-
-        for m in range(9): # test row, col, square
-            # if not the cell itself, and the mth cell of the group contains the value v, then "no"
-            if not (m==c/9 and j==c%9) and puz[m][j] == v: return False
-            if not (i==c/9 and m==c%9) and puz[i][m] == v: return False
-            if not ((i/3)*3 + m/3==c/9 and (j/3)*3 + m%3==c%9) and puz[(i/3)*3 + m/3][(j/3)*3 + m%3] == v:
-                return False
-
-        return True
-
-    """
-    starts with a set of all 81 cells, and tries to remove one (randomly) at a time
-    but not before checking that the cell can still be deduced from the remaining cells. """
-    cells     = set(range(81))
-    cellsleft = cells.copy()
-    while len(cells) > n and len(cellsleft):
-        cell = random.choice(list(cellsleft)) # choose a cell from ones we haven't tried
-        cellsleft.discard(cell) # record that we are trying this cell
-
-
-            # this is a pluckable cell!
-    	puzzle[cell/9][cell%9] = 0 # 0 denotes a blank cell
-       	cells.discard(cell) # remove from the set of visible cells (pluck it)
-            # we don't need to reset "cellsleft" because if a cell was not pluckable
-            # earlier, then it will still not be pluckable now (with less information
-            # on the board).
-
-    # This is the puzzle we found, in all its glory.
-    return (puzzle, len(cells))
-
-#use this definition to create a puzzle with n variables inside
-def generate_sudoku(n):
-   	a_puzzle_solution = construct_puzzle_solution()
-	result, number_of_cells = pluck(a_puzzle_solution, n)
-
-	return result, number_of_cells
-
 def construct_puzzle(puzzle_solution, is_uniform=False, probabilities=None, n_clues=40):
 
     # Check if distribution should be uniform
