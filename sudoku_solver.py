@@ -1,5 +1,6 @@
 import pycosat
 import pprint
+import timeit
 
 def v(i, j, d):
 	"""
@@ -86,7 +87,6 @@ def is_proper(grid):
             if d:
                 clauses.append([v(i, j, d)])
 
-
 	def py_itersolve(clauses): # don't use this function!
 	    while True:            # (it is only here to explain things)
 	        sol = pycosat.solve(clauses)
@@ -104,3 +104,25 @@ def is_proper(grid):
         if t == 2:
             return False
     return True
+
+def measure_hardness(grid):
+    """
+    solve a Sudoku grid inplace
+    """
+    clauses = sudoku_clauses()
+    for i in range(1, 10):
+        for j in range(1, 10):
+            d = grid[i - 1][j - 1]
+            # For each digit already known, a clause (with one literal).
+            # Note:
+            #     We could also remove all variables for the known cells
+            #     altogether (which would be more efficient).  However, for
+            #     the sake of simplicity, we decided not to do that.
+            if d:
+                clauses.append([v(i, j, d)])
+
+	start = timeit.timeit()
+    solution = pycosat.solve(clauses, verbose=1)
+    end = timeit.timeit()
+
+    print end-start

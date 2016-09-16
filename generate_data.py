@@ -2,6 +2,8 @@ import sudoku_generator as generator
 from pprint import pprint
 import numpy as np
 
+from sudoku_solver import measure_hardness
+
 gradient = np.ones((9,9))
 for i in range(9):
     gradient[i] *= i
@@ -28,20 +30,20 @@ gradient /= np.sum(gradient)
 block_diagonal_gradient /= np.sum(block_diagonal_gradient)
 block_diagonal_hill /= np.sum(block_diagonal_hill)
 
+f = open('sudoku_puzzles.txt', 'w')
+
 for k in range(100):
     puzzle_solution = generator.construct_puzzle_solution()
-    sudoku_uniform = generator.generate_sudoku(puzzle_solution, is_uniform=True, n_clues=35)
-    sudoku_gradient = generator.generate_sudoku(puzzle_solution, probabilities=gradient, n_clues=35)
-    sudoku_block_diag_grad = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_gradient, n_clues=35)
-    sudoku_block_diag_hill = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_hill, n_clues=35)
+    sudoku_uniform = generator.generate_sudoku(puzzle_solution, is_uniform=True, n_clues=80)
+    sudoku_gradient = generator.generate_sudoku(puzzle_solution, probabilities=gradient, n_clues=80)
+    sudoku_block_diag_grad = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_gradient, n_clues=80)
+    sudoku_block_diag_hill = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_hill, n_clues=80)
 
-    with open('sudoku_puzzles.txt', 'w') as f:
-        f.write('\n')
-        sudoku_uniform.tofile(f, sep=",", format="%s")
-        f.write('\n\n')
-        sudoku_gradient.tofile(f, sep=",", format="%s")
-        f.write('\n\n')
-        sudoku_block_diag_grad.tofile(f, sep=",", format="%s")
-        f.write('\n\n')
-        sudoku_block_diag_hill.tofile(f, sep=",", format="%s")
-        f.write('\n')
+    sudoku_uniform.tofile(f, sep=",", format="%s")
+    f.write('\n')
+    sudoku_gradient.tofile(f, sep=",", format="%s")
+    f.write('\n')
+    sudoku_block_diag_grad.tofile(f, sep=",", format="%s")
+    f.write('\n')
+    sudoku_block_diag_hill.tofile(f, sep=",", format="%s")
+    f.write('\n')
