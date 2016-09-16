@@ -43,10 +43,10 @@ def construct_puzzle_solution():
             # if there is an IndexError, we have worked ourselves in a corner (we just start over)
             pass
 
-def generate_sudoku(puzzle_solution, is_uniform=False, probabilities=None, n_clues=40):
+def generate_sudoku(puzzle_solution, is_uniform=False, probabilities=None, n_clues=40, n_epochs=10000):
 
-    # Check if distribution should be uniform
-    while True:
+    for epoch in range(n_epochs):
+        # Check if distribution should be uniform
         if is_uniform:
             clues = random.sample(xrange(81), n_clues)
         else:
@@ -60,7 +60,11 @@ def generate_sudoku(puzzle_solution, is_uniform=False, probabilities=None, n_clu
         for clue in clues:
             puzzle[clue / 9][clue % 9] = puzzle_solution[clue / 9][clue % 9]
         ret = solver.is_proper(puzzle)
-        print ret
         # Check if it's proper and return the board if it is
         if ret:
+            print "Proper sudoku board found for probability distribution: "
+            pprint(probabilities)
+            print '\n'
             return np.array(puzzle)
+
+    return []

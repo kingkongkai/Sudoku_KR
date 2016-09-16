@@ -2,8 +2,6 @@ import sudoku_generator as generator
 from pprint import pprint
 import numpy as np
 
-from sudoku_solver import measure_hardness
-
 gradient = np.ones((9,9))
 for i in range(9):
     gradient[i] *= i
@@ -26,24 +24,30 @@ for i in range(3):
         block_diagonal_hill[3 + i][3 + j] = 3
         block_diagonal_hill[6 + i][j] = 3
 
-gradient /= np.sum(gradient)
-block_diagonal_gradient /= np.sum(block_diagonal_gradient)
-block_diagonal_hill /= np.sum(block_diagonal_hill)
-
-f = open('sudoku_puzzles.txt', 'w')
+probabilities = [gradient / np.sum(gradient),
+                block_diagonal_gradient / np.sum(block_diagonal_gradient),
+                block_diagonal_hill / np.sum(block_diagonal_hill)]
 
 for k in range(100):
+    flag = False
     puzzle_solution = generator.construct_puzzle_solution()
-    sudoku_uniform = generator.generate_sudoku(puzzle_solution, is_uniform=True, n_clues=80)
-    sudoku_gradient = generator.generate_sudoku(puzzle_solution, probabilities=gradient, n_clues=80)
-    sudoku_block_diag_grad = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_gradient, n_clues=80)
-    sudoku_block_diag_hill = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_hill, n_clues=80)
+    sudokus = [generator.generate_sudoku(puzzle_solution, is_uniform=True, n_clues=40)]
+    for j in range(3):
+        sudokus.append(generator.generate_sudoku(puzzle_solution, probabilities=probabilities[j], n_clues=40))
+        if len(sudokus[-1]) == 0:
+            flag = True
+            break
+    if flag:
+        print "No proper sudoku found, generating new solution...\n"
+        continue
 
-    sudoku_uniform.tofile(f, sep=",", format="%s")
-    f.write('\n')
-    sudoku_gradient.tofile(f, sep=",", format="%s")
-    f.write('\n')
-    sudoku_block_diag_grad.tofile(f, sep=",", format="%s")
-    f.write('\n')
-    sudoku_block_diag_hill.tofile(f, sep=",", format="%s")
-    f.write('\n')
+    with open('sudoku_puzzles.txt', 'a') as f:
+        f.write('\n')
+        sudokus[0].tofile(f, sep=",", format="%s")
+        f.write('\n\n')
+        sudokus[1].tofile(f, sep=",", format="%s")
+        f.write('\n\n')
+        sudokus[2].tofile(f, sep=",", format="%s")
+        f.write('\n\n')
+        sudokus[3].tofile(f, sep=",", format="%s")
+        f.write('\n')
