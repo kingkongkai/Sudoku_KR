@@ -34,10 +34,10 @@ f = open('sudoku_puzzles.txt', 'w')
 
 for k in range(100):
     puzzle_solution = generator.construct_puzzle_solution()
-    sudoku_uniform = generator.generate_sudoku(puzzle_solution, is_uniform=True, n_clues=80)
-    sudoku_gradient = generator.generate_sudoku(puzzle_solution, probabilities=gradient, n_clues=80)
-    sudoku_block_diag_grad = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_gradient, n_clues=80)
-    sudoku_block_diag_hill = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_hill, n_clues=80)
+    sudoku_uniform = generator.generate_sudoku(puzzle_solution, is_uniform=True)
+    sudoku_gradient = generator.generate_sudoku(puzzle_solution, probabilities=gradient)
+    sudoku_block_diag_grad = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_gradient)
+    sudoku_block_diag_hill = generator.generate_sudoku(puzzle_solution, probabilities=block_diagonal_hill)
 
     sudoku_uniform.tofile(f, sep=",", format="%s")
     f.write('\n')
