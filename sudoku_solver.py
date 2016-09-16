@@ -3,34 +3,34 @@ import pprint
 import timeit
 
 def v(i, j, d):
-	"""
-	Return the number of the variable of cell i, j and digit d,
-	which is an integer in the range of 1 to 729 (including).
-	"""
-	return 81 * (i - 1) + 9 * (j - 1) + d
+    """
+    Return the number of the variable of cell i, j and digit d,
+    which is an integer in the range of 1 to 729 (including).
+    """
+    return 81 * (i - 1) + 9 * (j - 1) + d
 
 def solve_sudoku(clauses):
-	grid = [[0]*9 for i in range(9)]
+    grid = [[0]*9 for i in range(9)]
 
-	solutions = pycosat.itersolve(clauses)
-	n_solutions = 0
+    solutions = pycosat.itersolve(clauses)
+    n_solutions = 0
 
-	def read_cell(i, j):
-		# return the digit of cell i, j according to the solution
-		for d in range(1, 10):
-			if v(i, j, d) in sol:
-				return d
+    def read_cell(i, j):
+        # return the digit of cell i, j according to the solution
+        for d in range(1, 10):
+            if v(i, j, d) in sol:
+                return d
 
-	for sol in solutions:
-		n_solutions += 1
-		sol = set(sol)
+    for sol in solutions:
+        n_solutions += 1
+        sol = set(sol)
 
-		if n_solutions is 1:
-			for i in range(1, 10):
-				for j in range(1, 10):
-					grid[i - 1][j - 1] = read_cell(i, j)
+        if n_solutions is 1:
+            for i in range(1, 10):
+                for j in range(1, 10):
+                    grid[i - 1][j - 1] = read_cell(i, j)
 
-	return grid, n_solutions
+    return grid, n_solutions
 
 def sudoku_clauses():
     """
@@ -87,14 +87,14 @@ def is_proper(grid):
             if d:
                 clauses.append([v(i, j, d)])
 
-	def py_itersolve(clauses): # don't use this function!
-	    while True:            # (it is only here to explain things)
-	        sol = pycosat.solve(clauses)
-	        if isinstance(sol, list):
-	            yield sol
-	            clauses.append([-x for x in sol])
-	        else: # no more solutions -- stop iteration
-	            return
+    def py_itersolve(clauses): # don't use this function!
+        while True:            # (it is only here to explain things)
+            sol = pycosat.solve(clauses)
+            if isinstance(sol, list):
+                yield sol
+                clauses.append([-x for x in sol])
+            else: # no more solutions -- stop iteration
+                return
 
     # solve the SAT problem
     generator = py_itersolve(clauses)
@@ -121,8 +121,21 @@ def measure_hardness(grid):
             if d:
                 clauses.append([v(i, j, d)])
 
-	start = timeit.timeit()
+    start = timeit.timeit()
     solution = pycosat.solve(clauses, verbose=1)
     end = timeit.timeit()
 
     print end-start
+
+if __name__ == '__main__':
+    f = open('sudoku_puzzles.txt', 'r')
+    while True:
+        try:
+            print f.readline()
+            sudoku_uniform = np.fromstring(f.readline(), int, sep=',')
+            # sudoku_gradient = f.readline() 
+            # sudoku_block_diag_grad = f.readline()
+            # sudoku_block_diag_hill = f.readline()
+            print sudoku_uniform
+        except:
+            break
