@@ -1,6 +1,7 @@
 import pycosat
 import pprint
 import timeit
+import numpy as np
 
 def v(i, j, d):
     """
@@ -125,17 +126,28 @@ def measure_hardness(grid):
     solution = pycosat.solve(clauses, verbose=1)
     end = timeit.timeit()
 
-    print end-start
+    return end-start
 
 if __name__ == '__main__':
     f = open('sudoku_puzzles.txt', 'r')
+
+    measured_hardness = []
+    n_different_distributions = 7
+
     while True:
-        try:
-            print f.readline()
-            sudoku_uniform = np.fromstring(f.readline(), int, sep=',')
-            # sudoku_gradient = f.readline() 
-            # sudoku_block_diag_grad = f.readline()
-            # sudoku_block_diag_hill = f.readline()
-            print sudoku_uniform
-        except:
+        read_lines = [f.readline() for i in range(n_different_distributions)]
+
+        if not read_lines[-1]:
+            if read_lines[0]:
+                print "Line count isn't a multiple of {}.".format(n_different_distributions)
             break
+
+        read_sudokus = [np.fromstring(line, int, 81, ',').reshape((9,9)) for line in read_lines]
+        hardness = [measure_hardness(sudoku) for sudoku in read_sudokus]
+
+        measured_hardness.append(hardness)
+
+
+    measured_hardness = np.array(measured_hardness)
+
+    print np.mean(measured_hardness, 0)
